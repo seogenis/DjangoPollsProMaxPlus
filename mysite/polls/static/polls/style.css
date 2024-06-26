@@ -1,0 +1,165 @@
+
+body {
+  background: white url("images/background.png") no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.poll-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.choice-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.choice-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 18px;
+  color: #333;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  margin: 10px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.choice-item:hover {
+  background-color: #007BFF;
+  color: white;
+}
+
+.choice-text {
+  flex-grow: 1;
+}
+
+.choice-votes {
+  margin-left: 10px;
+  font-weight: bold;
+  color: #007BFF;
+}
+
+.choice-item:hover .choice-votes {
+  color: white;
+}
+
+.index-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 50px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.question-list li {
+  margin: 10px 0;
+}
+
+.question-link {
+  display: block;
+  padding: 10px;
+  font-size: 18px;
+  color: #007BFF;
+  background-color: #f8f9fa;
+  text-decoration: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.question-link:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 50px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.link-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+}
+
+.vote-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #007BFF;
+  text-decoration: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.vote-button:hover {
+  background-color: #0056b3;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.choices {
+  margin-bottom: 20px;
+}
+
+.choice {
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+
+
+
+
+/*     Importing Google fonts    */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+ /* Applying CSS to sphere */
+.tagcloud {
+  display: inline-block;
+  top: 0px;
+  left: 36%;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px;
+}
+
+/* Change color of each text in sphere on hover   */
+.tagcloud--item:hover {
+  color: #FFC300 ;
+}
+            
+        
