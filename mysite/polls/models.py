@@ -1,8 +1,9 @@
 import datetime
 from django.db import models
+from django.dispatch import receiver
 from django.utils import timezone
 from django.contrib import admin
-# Create your models here - how data is structured
+
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
@@ -28,3 +29,27 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+class ObjectLog(models.Model):
+    action_choices = [
+        ("CR", "Create"),
+        ("M", "Modify"),
+        ("D", "Delete"),
+    ]
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
+    model_name = models.CharField(max_length=50)
+    object_id = models.IntegerField()
+    field_name = models.CharField(max_length=50, null=True, default=None)
+    previous_value = models.TextField(blank=True, null=True, default=None)
+    new_value = models.TextField(blank=True, null=True, default=None)
+    action = models.CharField(max_length=32, choices=action_choices)
+
+
+@receiver(models.signals.post_delete, sender=None)
+def _log_model_deletion(sender, instance, using, **kwargs):
+    if sender == ObjectLog:
+        # Skip if the model is itself an ObjectLog
+        return
+    pass
+    # TODO: FILL IN

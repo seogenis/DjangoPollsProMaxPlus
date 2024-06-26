@@ -1,0 +1,36 @@
+models.ObjectLog is a database object that is intended to track and update/edit 
+
+1. Implement serializer.LoggedModelSerializer such that
+    a) Any new objects created with a LoggedModelSerializer are tracked with an ObjectLog entry
+        example:
+        ObjectLog - id: 1
+            timestamp: 2024-05-29T18:07:40.136519+00:00
+            model_name: "Choice"
+            object_id: 1
+            field_name: None
+            action: "CR"
+            previous_value: None
+            new_value: None
+
+    b) Any objects that are modified with the LoggedModelSerializer are tracked with an ObjectLog entry
+        example:
+        ObjectLog - id: 2
+            timestamp: 2024-05-29T18:07:40.136519+00:00
+            model_name: "Choice"
+            object_id: 1
+            field_name: "choice_text"
+            action: "M"
+            previous_value: "a"
+            new_value: "b"
+
+2. Implement models._log_model_deletion such that
+    a) ALL objects (except for ObjectLog objects themselves) are tracked by an ObjectLog entry
+        example:
+        ObjectLog - id: 3
+            timestamp: 2024-05-29T18:07:40.136519+00:00
+            model_name: "Choice"
+            object_id: 1
+            field_name: None
+            action: "D"
+            previous_value: None
+            new_value: None
