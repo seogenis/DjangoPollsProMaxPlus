@@ -1,4 +1,4 @@
-Welcome to Sean's first ever django web progamming project! My first time working with all concepts/tools using in this repo... Please be patient with me :pray:
+Welcome to Sean's first web progamming project! My first time working with all concepts/tools using in this repo... Please be patient with me :pray:
 
 
 This project features a poll system consisting of the following:
