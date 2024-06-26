@@ -12,7 +12,7 @@ from rest_framework import generics
 from .serializer import QuestionSerializer, ChoiceSerializer
 
 
-# serializers view
+# API view
 class QuestionListCreate(generics.ListCreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
@@ -30,7 +30,7 @@ class ChoiceDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ChoiceSerializer
 
 
-
+# voting pages
 def get_queryset(self):
     """
     Return the last five published questions (not including those set to be
