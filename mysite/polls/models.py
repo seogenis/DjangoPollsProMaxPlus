@@ -21,7 +21,6 @@ class Question(models.Model):
     def was_published_recently(self):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
-
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
@@ -41,9 +40,12 @@ class ObjectLog(models.Model):
     model_name = models.CharField(max_length=50)
     object_id = models.IntegerField()
     field_name = models.CharField(max_length=50, null=True, default=None)
+    action = models.CharField(max_length=32, choices=action_choices)
     previous_value = models.TextField(blank=True, null=True, default=None)
     new_value = models.TextField(blank=True, null=True, default=None)
-    action = models.CharField(max_length=32, choices=action_choices)
+
+    def __str__(self):
+        return self.action
 
 
 @receiver(models.signals.post_delete, sender=None)
@@ -51,5 +53,13 @@ def _log_model_deletion(sender, instance, using, **kwargs):
     if sender == ObjectLog:
         # Skip if the model is itself an ObjectLog
         return
-    pass
     # TODO: FILL IN
+
+    ObjectLog.objects.create(
+        model_name=instance.__class__.__name__,
+        object_id=instance.pk,
+        field_name=None,
+        action="D",
+        new_value=None,
+        previous_value=None,
+    )
