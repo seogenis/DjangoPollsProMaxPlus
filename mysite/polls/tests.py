@@ -1,11 +1,10 @@
-from django.test import TestCase
-
 # Create your tests here.
 import datetime
 from django.test import TestCase
 from django.utils import timezone
-from .models import Question
+from .models import Question, Choice, ObjectLog
 from django.urls import reverse
+from .serializer import QuestionSerializer, ChoiceSerializer
 
 
 def create_question(question_text, days):
@@ -127,3 +126,57 @@ class QuestionDetailViewTests(TestCase):
         url = reverse("polls:detail", args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+
+class QuestionModelTest(TestCase):
+    def test_create_question(self):
+        data = {'question_text': 'What is your favorite color?', 'pub_date': timezone.now()}
+        serializer = QuestionSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        question = serializer.save()
+        self.assertIsInstance(question, Question)
+        self.assertEqual(question.question_text, 'What is your favorite color?')
+
+    def test_update_question(self):
+        question = Question.objects.create(question_text='What is your favorite color?', pub_date=timezone.now())
+        data = {'question_text': 'What is your favorite animal?'}
+        serializer = QuestionSerializer(instance=question, data=data, partial=True)
+        self.assertTrue(serializer.is_valid())
+        updated_question = serializer.save()
+        self.assertEqual(updated_question.question_text, 'What is your favorite animal?')
+        self.assertEqual(ObjectLog.objects.filter(action='M', object_id=question.id).count(), 1)
+
+    def test_delete_question(self):
+        question = Question.objects.create(question_text='What is your favorite color?', pub_date=timezone.now())
+        question_id = question.id
+        question.delete()
+        self.assertFalse(Question.objects.filter(id=question_id).exists())
+        self.assertEqual(ObjectLog.objects.filter(action='D', object_id=question_id).count(), 1)
+
+class ChoiceModelTest(TestCase):
+    def setUp(self):
+        self.question = Question.objects.create(question_text='What is your favorite color?', pub_date=timezone.now())
+
+    def test_create_choice(self):
+        data = {'question': self.question.id, 'choice_text': 'Blue', 'votes': 0}
+        serializer = ChoiceSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        choice = serializer.save()
+        self.assertIsInstance(choice, Choice)
+        self.assertEqual(choice.choice_text, 'Blue')
+
+    def test_update_choice(self):
+        choice = Choice.objects.create(question=self.question, choice_text='Blue', votes=0)
+        data = {'choice_text': 'Red'}
+        serializer = ChoiceSerializer(instance=choice, data=data, partial=True)
+        self.assertTrue(serializer.is_valid())
+        updated_choice = serializer.save()
+        self.assertEqual(updated_choice.choice_text, 'Red')
+        self.assertEqual(ObjectLog.objects.filter(action='M', object_id=choice.id).count(), 1)
+
+    def test_delete_choice(self):
+        choice = Choice.objects.create(question=self.question, choice_text='Blue', votes=0)
+        choice_id = choice.id
+        choice.delete()
+        self.assertFalse(Choice.objects.filter(id=choice_id).exists())
+        self.assertEqual(ObjectLog.objects.filter(action='D', object_id=choice_id).count(), 1)
