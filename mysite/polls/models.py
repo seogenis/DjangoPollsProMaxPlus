@@ -53,7 +53,6 @@ def _log_model_deletion(sender, instance, using, **kwargs):
     if sender == ObjectLog:
         # Skip if the model is itself an ObjectLog
         return
-    # TODO: FILL IN
 
     ObjectLog.objects.create(
         model_name=instance.__class__.__name__,

@@ -139,12 +139,13 @@ class QuestionModelTest(TestCase):
 
     def test_update_question(self):
         question = Question.objects.create(question_text='What is your favorite color?', pub_date=timezone.now())
+        previous_count = Question.objects.filter(action='M', object_id=question.id).count()
         data = {'question_text': 'What is your favorite animal?'}
         serializer = QuestionSerializer(instance=question, data=data, partial=True)
         self.assertTrue(serializer.is_valid())
         updated_question = serializer.save()
         self.assertEqual(updated_question.question_text, 'What is your favorite animal?')
-        self.assertEqual(ObjectLog.objects.filter(action='M', object_id=question.id).count(), 1)
+        self.assertEqual(ObjectLog.objects.filter(action='M', object_id=question.id).count(), previous_count + 1)
 
     def test_delete_question(self):
         question = Question.objects.create(question_text='What is your favorite color?', pub_date=timezone.now())

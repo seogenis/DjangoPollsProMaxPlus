@@ -1,5 +1,5 @@
 # Create your views here - front end
-from .models import Question, Choice
+from .models import Question, Choice, ObjectLog
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -9,7 +9,7 @@ from django.views import generic
 from django.utils import timezone
 
 from rest_framework import generics
-from .serializer import QuestionSerializer, ChoiceSerializer
+from .serializer import QuestionSerializer, ChoiceSerializer, ObjectLogSerializer
 
 
 # API view
@@ -28,6 +28,10 @@ class ChoiceListCreate(generics.ListCreateAPIView):
 class ChoiceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
+
+class LogList(generics.ListAPIView):
+    queryset = ObjectLog.objects.all()
+    serializer_class = ObjectLogSerializer
 
 
 # voting pages
