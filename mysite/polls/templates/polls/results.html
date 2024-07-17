@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 </head>
 <body>
+    <a href="{% url 'login'%}">Click here to login page.</a>
     <div class="poll-container">
         <h1>{{ question.question_text }}</h1>
         <ul class="choice-list">

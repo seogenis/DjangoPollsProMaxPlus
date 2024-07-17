@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'polls/style.css' %}">
 </head>
 <body>
+    <a href="{% url 'login'%}">Click here to login page.</a>
     <div class="container">
         <form action="{% url 'polls:vote' question.id %}" method="post">
             {% csrf_token %}

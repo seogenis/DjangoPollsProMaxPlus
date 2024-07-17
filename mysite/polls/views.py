@@ -7,6 +7,7 @@ from django.db.models import F
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import generics
 from .serializer import QuestionSerializer, ChoiceSerializer, ObjectLogSerializer
@@ -17,17 +18,45 @@ class QuestionListCreate(generics.ListCreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+    def perform_destroy(self, instance):
+        instance._request_user = self.request.user
+        instance.delete()
 
 class ChoiceListCreate(generics.ListCreateAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 class ChoiceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+    def perform_destroy(self, instance):
+        instance._request_user = self.request.user
+        instance.delete()
 
 class LogList(generics.ListAPIView):
     queryset = ObjectLog.objects.all()
@@ -62,8 +91,7 @@ class DetailView(generic.DetailView):
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
-
-class ResultsView(generic.DetailView):
+class ResultsView(LoginRequiredMixin, generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 

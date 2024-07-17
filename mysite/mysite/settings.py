@@ -143,3 +143,7 @@ if not TESTING:
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         *MIDDLEWARE,
     ]
+
+LOGIN_REDIRECT_URL = '/polls'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

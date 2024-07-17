@@ -13,5 +13,5 @@ urlpatterns = [
     path("api/questions/<int:pk>/", views.QuestionDetail.as_view(), name="question-detail"),
     path("api/choices/", views.ChoiceListCreate.as_view(), name="choice-list"),
     path("api/choices/<int:pk>/", views.ChoiceDetail.as_view(), name="choice-detail"),
-    path("api/logs", views.LogList.as_view(), name="log-list")
+    path("api/logs", views.LogList.as_view(), name="log-list"),
 ]
