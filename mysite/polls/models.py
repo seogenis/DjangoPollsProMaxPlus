@@ -14,17 +14,15 @@ class LoggedModel(models.Model):
         user = get_current_user()
         username = user.username if user and user.is_authenticated else 'Anonymous'
         
-        is_new = self.pk is None  # Determine if the object is new
-
+        # Determine if the object is new
+        is_new = self.pk is None 
         if not is_new:
-            # Fetch the old instance before saving to compare field values
             old_instance = self.__class__.objects.get(pk=self.pk)
 
-        # Save the object to get the primary key assigned (if it's a new object)
         super().save(*args, **kwargs)
         
         if is_new:
-            # Create log entry for the creation of the new object
+            # Create 
             ObjectLog.objects.create(
                 model_name=self.__class__.__name__,
                 object_id=str(self.pk),
@@ -35,7 +33,7 @@ class LoggedModel(models.Model):
                 username=username
             )
         else:
-            # Update log entries for changes in existing objects
+            # Update 
             for field in self._meta.fields:
                 old_value = getattr(old_instance, field.name)
                 new_value = getattr(self, field.name)
@@ -50,7 +48,7 @@ class LoggedModel(models.Model):
                         username=username
                     )
 
-
+    # Delete
     def delete(self, *args, **kwargs):
         user = get_current_user()
         username = user.username if user and user.is_authenticated else 'Anonymous'
@@ -85,8 +83,8 @@ class Question(LoggedModel):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
     
+    # Delete choices along with question
     def delete(self, using=None, keep_parents=False):
-        # Pass the user context to each related Choice instance before deleting them
         for choice in self.choice_set.all():
             choice._request_user = self._request_user
             choice.delete()
