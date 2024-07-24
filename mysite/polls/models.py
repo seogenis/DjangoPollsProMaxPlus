@@ -6,8 +6,69 @@ from django.utils import timezone
 from django.contrib import admin
 from .middleware import get_current_user
 
+class LoggedModel(models.Model):
+    class Meta:
+        abstract = True
 
-class Question(models.Model):
+    def save(self, *args, **kwargs):
+        user = get_current_user()
+        username = user.username if user and user.is_authenticated else 'Anonymous'
+        
+        is_new = self.pk is None  # Determine if the object is new
+
+        if not is_new:
+            # Fetch the old instance before saving to compare field values
+            old_instance = self.__class__.objects.get(pk=self.pk)
+
+        # Save the object to get the primary key assigned (if it's a new object)
+        super().save(*args, **kwargs)
+        
+        if is_new:
+            # Create log entry for the creation of the new object
+            ObjectLog.objects.create(
+                model_name=self.__class__.__name__,
+                object_id=str(self.pk),
+                field_name=None,
+                action="CR",
+                new_value=None,
+                previous_value=None,
+                username=username
+            )
+        else:
+            # Update log entries for changes in existing objects
+            for field in self._meta.fields:
+                old_value = getattr(old_instance, field.name)
+                new_value = getattr(self, field.name)
+                if old_value != new_value:
+                    ObjectLog.objects.create(
+                        model_name=self.__class__.__name__,
+                        object_id=str(self.pk),
+                        field_name=field.name,
+                        action="M",
+                        previous_value=str(old_value),
+                        new_value=str(new_value),
+                        username=username
+                    )
+
+
+    def delete(self, *args, **kwargs):
+        user = get_current_user()
+        username = user.username if user and user.is_authenticated else 'Anonymous'
+        
+        ObjectLog.objects.create(
+            model_name=self.__class__.__name__,
+            object_id=str(self.pk),
+            field_name=None,
+            action="D",
+            new_value=None,
+            previous_value=None,
+            username=username
+        )
+        
+        super().delete(*args, **kwargs)
+
+
+class Question(LoggedModel):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
 
@@ -31,7 +92,7 @@ class Question(models.Model):
             choice.delete()
         super().delete(using, keep_parents)
 
-class Choice(models.Model):
+class Choice(LoggedModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
@@ -59,56 +120,3 @@ class ObjectLog(models.Model):
     def __str__(self):
         return (self.username if self.username != None else "No Username") + " " + self.action + " " + str(self.timestamp)
 
-
-from django.db.models.signals import pre_save, post_save, post_delete
-from django.dispatch import receiver
-
-@receiver(pre_save, sender=Choice)
-@receiver(pre_save, sender=Question)
-def log_model_changes(sender, instance, **kwargs):
-    user = get_current_user()
-    if instance.pk:
-        previous_instance = sender.objects.get(pk=instance.pk)
-        for field in instance._meta.fields:
-            field_name = field.name
-            new_value = getattr(instance, field_name)
-            previous_value = getattr(previous_instance, field_name)
-            if new_value != previous_value:
-                ObjectLog.objects.create(
-                    model_name=instance.__class__.__name__,
-                    object_id=str(instance.pk),
-                    field_name=field_name,
-                    action="M",
-                    previous_value=str(previous_value),
-                    new_value=str(new_value),
-                    username=user.username if user and user.is_authenticated else 'Anonymous'
-                )
-
-@receiver(post_save, sender=Choice)
-@receiver(post_save, sender=Question)
-def log_model_creation(sender, instance, created, **kwargs):
-    user = get_current_user()
-    if created:
-        ObjectLog.objects.create(
-            model_name=instance.__class__.__name__,
-            object_id=str(instance.pk),
-            field_name=None,
-            action="CR",
-            new_value=None,
-            previous_value=None,
-            username=user.username if user and user.is_authenticated else 'Anonymous'
-        )
-
-@receiver(post_delete, sender=Choice)
-@receiver(post_delete, sender=Question)
-def log_model_deletion(sender, instance, **kwargs):
-    user = get_current_user()
-    ObjectLog.objects.create(
-        model_name=instance.__class__.__name__,
-        object_id=str(instance.pk),
-        field_name=None,
-        action="D",
-        new_value=None,
-        previous_value=None,
-        username=user.username if user and user.is_authenticated else 'Anonymous'
-    )
