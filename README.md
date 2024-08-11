@@ -1,5 +1,6 @@
-
 # DjangoPollsProMaxPlus
+
+**Note: This project was made to reflect my python Django web programming skills, since I can't upload my real work due to NDAs.**
 
 DjangoPollsProMaxPlus is a comprehensive polling application built with Django, featuring a frontend interface, admin interface, REST API, model, serializer, authentication, and logging. This project showcases a full-stack implementation, demonstrating skills in web development, API design, and backend management.
 
